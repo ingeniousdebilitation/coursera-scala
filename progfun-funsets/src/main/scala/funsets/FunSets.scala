@@ -4,6 +4,7 @@ import common._
 
 /**
  * 2. Purely Functional Sets.
+ * @hint http://stackoverflow.com/questions/13052735/is-my-understanding-of-below-scala-code-correct
  */
 object FunSets {
   /**
@@ -20,30 +21,30 @@ object FunSets {
   /**
    * Returns the set of the one given element.
    */
-  def singletonSet(elem: Int): Set = ???
+  def singletonSet(elem: Int): Set = (x: Int) => x == elem
 
   /**
    * Returns the union of the two given sets,
    * the sets of all elements that are in either `s` or `t`.
    */
-  def union(s: Set, t: Set): Set = ???
+  def union(s: Set, t: Set): Set = (x: Int) => s(x) || t(x)
 
   /**
    * Returns the intersection of the two given sets,
    * the set of all elements that are both in `s` and `t`.
    */
-  def intersect(s: Set, t: Set): Set = ???
+  def intersect(s: Set, t: Set): Set = (x: Int) => s(x) && t(x)
 
   /**
    * Returns the difference of the two given sets,
    * the set of all elements of `s` that are not in `t`.
    */
-  def diff(s: Set, t: Set): Set = ???
+  def diff(s: Set, t: Set): Set = (x: Int) => s(x) && !t(x)
 
   /**
    * Returns the subset of `s` for which `p` holds.
    */
-  def filter(s: Set, p: Int => Boolean): Set = ???
+  def filter(s: Set, p: Int => Boolean): Set = (x: Int) => s(x) && p(x)//nešlo by nějak ten predikát nacpat od těch funkcí přímo? I když to by modifikovalo množinu, achjo
 
   /**
    * The bounds for `forall` and `exists` are +/- 1000.
@@ -52,21 +53,29 @@ object FunSets {
 
   /**
    * Returns whether all bounded integers within `s` satisfy `p`.
+   * 
+   * Když při iterování dojde až na konec, tak může vrátit true.
+   * Pokud je nalezen i jen jediný prvek nesplňující predikát, tak false.
+   * Jinak iterovat s následující hodnotou v intervalu <-bound, bound> -- znamená
+   * že hodnota splňuje predikát a lze pokračovat.
    */
   def forall(s: Set, p: Int => Boolean): Boolean = {
     def iter(a: Int): Boolean = {
-      if (???) ???
-      else if (???) ???
-      else iter(???)
+      if (a > bound) true
+      else if (s(a) && !p(a)) false
+      else iter(a+1)
     }
-    iter(???)
+    iter(-bound)
   }
 
   /**
    * Returns whether there exists a bounded integer within `s`
    * that satisfies `p`.
+   * 
+   * Když to podosazuju do funkce forall, tak zjistím, že stačí znegovat 
+   * predikát a pak i celou funkci.
    */
-  def exists(s: Set, p: Int => Boolean): Boolean = ???
+  def exists(s: Set, p: Int => Boolean): Boolean = !forall(s, (x: Int) => !p(x) )
 
   /**
    * Returns a set transformed by applying `f` to each element of `s`.
